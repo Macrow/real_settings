@@ -1,0 +1,9 @@
+Description:
+    install RealSettings for your application
+
+Example:
+    rails generate real_settings:install
+
+    This will create:
+        config/initializers/real_settings.rb
+        db/migrate/xxxxxxxxx_create_real_settings.rb
