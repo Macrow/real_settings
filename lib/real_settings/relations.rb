@@ -7,8 +7,8 @@ ActiveRecord::Base.class_eval do
       def settings
         OwnerSettings.get_settings(self, __default_settings_options)
       end
-      
-      after_destroy { |owner| owner.settings.target_settings.each { |s| s.destroy } }
+      after_save {|owner| owner.settings.save!}
+      after_destroy {|owner| owner.settings.target_settings.each {|s| s.destroy}}
     end
   end
 end

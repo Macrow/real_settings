@@ -30,7 +30,6 @@ describe "RealSettings" do
     Settings.app_name.should == 'new name'
     Settings.reload!
     Settings.app_name.should == @app_name
-    
   end
   
   it "load default settings from database" do
@@ -93,7 +92,7 @@ describe "RealSettings" do
     @user1.settings.reload!
     @user1.settings.editor.should == nil
     @user1.settings.editor = 'textmate'
-    @user1.settings.save!
+    @user1.save!
     @user1.settings.reload!
     @user1.settings.editor.should == 'textmate'
     
@@ -103,7 +102,7 @@ describe "RealSettings" do
   it "user has same settings with global settings" do
     @user1.settings.app_name.should == nil
     @user1.settings.app_name = 'app name for user'
-    @user1.settings.save!
+    @user1.save!
     @user1.settings.app_name.should == 'app name for user'
     Settings.app_name.should == @app_name
   end
@@ -120,8 +119,8 @@ describe "RealSettings" do
     
     @user1.settings.editor = 'textmate'
     @user2.settings.editor = 'vim'
-    @user1.settings.save!
-    @user2.settings.save!
+    @user1.save!
+    @user2.save!
     @user1.settings.editor.should == 'textmate'
     @user2.settings.editor.should == 'vim'
   end
@@ -129,7 +128,7 @@ describe "RealSettings" do
   it "diferent users have different settings" do
     @user1.settings.editor = 'textmate'    
     @user2.settings.editor.should == nil
-    @user1.settings.save!
+    @user1.save!
     @user2.settings.editor.should == nil
   end
   
@@ -149,7 +148,7 @@ describe "RealSettings" do
 
     @user1.settings.notebook = 'Macbook Air'
     @user1.settings.mobile = 'iPhone 4S'
-    @user1.settings.save!
+    @user1.save!
     @user1.settings.notebook.should == 'Macbook Air'
     @user1.settings.mobile.should == 'iPhone 4S'
     @user1.settings.reload!
@@ -162,7 +161,7 @@ describe "RealSettings" do
   
   it "be sure destroy settings after destroy user" do
     @user1.settings.new_feature = "new setting for user"
-    @user1.settings.save!
+    @user1.save!
     @user1.destroy
     Settings.where(:key => 'new_feature').all.should be_empty
   end

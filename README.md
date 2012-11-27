@@ -34,8 +34,8 @@ Run install command and migrate database:
 Settings.config do
   settings.app_name = "My Application Name"
   settings.app_url = "http://www.my-application.com"
-  default_meta_keywords = "default meta keywords"
-  default_meta_description = "default meta description"
+  settings.default_meta_keywords = "default meta keywords"
+  settings.default_meta_description = "default meta description"
   # add some settings here
 end
 ```
@@ -58,8 +58,8 @@ Settings.app_name # => "real_settings"
 Settings.config do
   settings.app_name = "My Application Name"
   settings.app_url = "http://www.my-application.com"
-  default_meta_keywords = "default meta keywords"
-  default_meta_description = "default meta description"
+  settings.default_meta_keywords = "default meta keywords"
+  settings.default_meta_description = "default meta description"
   ......
 end
 
