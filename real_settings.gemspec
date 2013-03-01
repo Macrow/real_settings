@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["Macrow_wh@163.com"]
   gem.description   = %q{A real settings tool for Rails3}
   gem.summary       = %q{A real settings tool for Rails3}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/Macrow/real_settings"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
