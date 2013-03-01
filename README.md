@@ -1,4 +1,4 @@
-# RealSettings
+# RealSettings [![Build Status](https://secure.travis-ci.org/Macrow/real_settings.png)](http://travis-ci.org/Macrow/real_settings)
 
 RealSettings is a real settings tool for Rails3.
 
@@ -30,17 +30,23 @@ Run install command and migrate database:
     
 ## Configuration in config/initializers/real_settings.rb
 
+Caution: settings in 'file_config' can't store in database.
+
 ```ruby
-Settings.config do
+Settings.file_config do |settings|
   settings.app_name = "My Application Name"
   settings.app_url = "http://www.my-application.com"
   settings.default_meta_keywords = "default meta keywords"
   settings.default_meta_description = "default meta description"
   # add some settings here
 end
+
+Settings.db_config_default do |settings|
+  settings.paginate_count = 10
+end
 ```
 
-## Caution: settings in config/initializers/real_settings.rb can't store in database.
+## Caution: settings set by 'file_config' in config/initializers/real_settings.rb can't store in database.
 
 ```ruby
 Settings.app_name # => "real_settings"
@@ -48,6 +54,11 @@ Settings.app_name = "new app name"
 Settings.app_name # => "new app name"
 Settings.save!
 Settings.app_name # => "real_settings"
+
+Settings.paginate_count # => 10
+Settings.paginate_count = 20
+Settings.save!
+Setttings.paginate_count # => 20
 ```
     
 ## Features & Usage
@@ -75,6 +86,27 @@ Settings.default_meta_description # => "default meta description"
 Settings.admin_name # => nil
 Settings.admin_name = "Macrow"
 Settings.save!
+```
+
+### Smart Convert setting type
+
+```ruby
+Settings.a = 123
+Settings.b = 'string'
+Settings.c = [1,2,3]
+Settings.d = Time.now
+Settings.e = 12.345
+Settings.f = false
+
+Settings.save!
+Settings.reload!
+
+Settings.a # 123 # Fixnum
+Settings.b # 'string' # String
+Settings.c # [1,2,3] # Array
+Settings.d # Time.now # Time
+Settings.e # 12.345 # Float
+Settings.f # false # Boolean
 ```
 
 ### Support has_settings method
@@ -147,10 +179,16 @@ form_for Settings, :as => :settings, :url => settings_update_path, :method => :p
   ......
 end
 
+simple_form_for Settings, :as => :settings, :url => settings_update_path, :method => :put do |f|
+  f.input :app_name
+  f.input :app_url
+  ......
+end
+
 # Update Action:
 Settings.update_settings(params[:settings])
 ```
- 
+
 ### Editing User's settings
 
 ```ruby
@@ -164,6 +202,12 @@ end
 form_for @user.settings, :as => :settings, :url => user_settings_update_path(@user), :method => :put do |f|
   f.text_field :notebook
   f.text_field :mobile
+  ......
+end
+
+simple_form_for @user.settings, :as => :settings, :url => user_settings_update_path(@user), :method => :put do |f|
+  f.input :notebook
+  f.input :mobile
   ......
 end
 

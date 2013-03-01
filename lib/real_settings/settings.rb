@@ -4,11 +4,22 @@ class Settings < ActiveRecord::Base
   cattr_accessor :__settings, :__file_settings, :__db_settings, :__temp_settings
   
   class << self
-    def config
+    def file_config
       yield self
       self.__file_settings = __temp_settings
       reload!
     end
+    
+    def db_config_default
+      yield self
+      db_default = __temp_settings
+      reload!
+      self.__settings = db_default.merge(__db_settings)
+      save!
+    end
+    
+    # config method should be deprecated in future version
+    alias_method :config, :file_config
     
     def to_hash
       __settings.dup
@@ -33,9 +44,9 @@ class Settings < ActiveRecord::Base
       __settings.delete_if { |key, value| value == __db_settings[key] || __hook_for_delete_owner_default_settings(key, value) }
       __settings.each do |key, value|
         if __db_settings.has_key?(key)
-          where(:key => key).first.update_attribute(:value, value)
+          where(:key => key).first.update_attribute(:value, value.to_s)
         else
-          create!(:key => key, :value => value, :target_id => target_id, :target_type => target_type)
+          create!(:key => key, :value => value.to_s, :target_id => target_id, :target_type => target_type)
         end
       end
       __db_settings.merge!(__settings)
@@ -56,16 +67,38 @@ class Settings < ActiveRecord::Base
     end
     
     def method_missing(name, *args)
-      if self.respond_to?(name)
+      if respond_to?(name)
         super(name, args)
       else
         if name =~ /\w+=$/
           __temp_settings[name.to_s.downcase.gsub('=', '').to_sym] = args.first
           __settings[name.to_s.downcase.gsub('=', '').to_sym] = args.first
         elsif name =~ /\w+/
-          __settings[name.to_s.downcase.to_sym] || __hook_for_load_owner_default_settings(name.to_s.downcase.to_sym)
+          if __settings[name.to_s.downcase.to_sym].nil?
+            __hook_for_load_owner_default_settings(name.to_s.downcase.to_sym)
+          else
+            __settings[name.to_s.downcase.to_sym]
+          end
         else
           raise NoMethodError
+        end
+      end
+    end
+    
+    # Hack for simple_form auto column type detectation
+    def column_for_attribute(name)
+      if __settings[name].nil?
+        RealSettings::FakeColumn.new('string')
+      else
+        case __settings[name].class.to_s
+        when 'Fixnum', 'Bignum'
+          RealSettings::FakeColumn.new('integer', true)
+        when 'Float'
+          RealSettings::FakeColumn.new('float', true)
+        when 'TrueClass', 'FalseClass'
+          RealSettings::FakeColumn.new('boolean')
+        else
+          RealSettings::FakeColumn.new('string')
         end
       end
     end
@@ -94,7 +127,7 @@ class Settings < ActiveRecord::Base
     def load_from_database!
       begin
         __db_settings = {}
-        where(:target_type => target_type, :target_id => target_id).order(:key).all.each { |s| self.__db_settings[s.key.to_sym] = s.value }
+        where(:target_type => target_type, :target_id => target_id).order(:key).each { |s| self.__db_settings[s.key.to_sym] = RealSettings::SmartConvert.convert(s.value) }
       rescue
         __db_settings = {}
       end

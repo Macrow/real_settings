@@ -7,7 +7,7 @@ ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":me
 ActiveRecord::Migration.verbose = false
 
 class User < ActiveRecord::Base
-  has_settings :defaults => { :notebook => 'Macbook Pro', :mobile => 'iPhone 4' }
+  has_settings :defaults => { :notebook => 'Macbook Pro', :mobile => 'iPhone 4', :page_count => 20 }
 end
 
 class Account < ActiveRecord::Base
