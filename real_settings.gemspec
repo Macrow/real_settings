@@ -15,6 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = RealSettings::VERSION
   
+  gem.add_dependency 'rails'
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'sqlite3'
 end
