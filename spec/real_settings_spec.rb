@@ -242,6 +242,6 @@ describe "RealSettings" do
     @user1.settings.new_feature = "new setting for user"
     @user1.save!
     @user1.destroy
-    Settings.where(:key => 'new_feature').all.should be_empty
+    Settings.where(:key => 'new_feature').should be_empty
   end
 end

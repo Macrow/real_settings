@@ -1,5 +1,7 @@
 class Settings < ActiveRecord::Base
-  attr_accessible :key, :value, :target_id, :target_type
+  if Rails.version < '4.0.0'
+    attr_accessible :key, :value, :target_id, :target_type
+  end
   @@__settings, @@__file_settings, @@__db_settings, @@__temp_settings = {}, {}, {}, {}
   cattr_accessor :__settings, :__file_settings, :__db_settings, :__temp_settings
   

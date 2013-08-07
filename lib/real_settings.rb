@@ -1,3 +1,4 @@
+require 'rails'
 require 'real_settings/version'
 require 'real_settings/smart_convert'
 require 'real_settings/fake_column'
