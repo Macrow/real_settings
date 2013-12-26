@@ -17,7 +17,10 @@ class Settings < ActiveRecord::Base
       db_default = __temp_settings
       reload!
       self.__settings = db_default.merge(__db_settings)
-      save!
+      begin
+        save!
+      rescue
+      end
     end
     
     # config method should be deprecated in future version
